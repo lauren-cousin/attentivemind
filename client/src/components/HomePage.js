@@ -10,7 +10,6 @@ function HomePage() {
       <h1 className="font-merriweather font-normal text-5xl mb-4">Welcome to AttentiveMind</h1>
       <p className="font-manrope font-light text-2xl">Your comprehensive study tool.</p>
       
-      {/* Buttons at the bottom of the main content */}
       <div className="flex justify-around items-center mt-10">
         {/* Text Summarization & Key Concept Extraction Button */}
         <div className="text-center">
@@ -37,7 +36,7 @@ function HomePage() {
         </div>
       </div>
     </div>
-  );
-}
+  )
+};
 
 export default HomePage;

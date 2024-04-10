@@ -1,20 +1,20 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { useSummary } from '../SummaryContext';
 
 function TextSummarization() {
-    const [inputText, setInputText] = useState(''); // State to hold the input text
-    const [summarizedText, setSummarizedText] = useState(''); // State to hold the summarized text
-    const [isLoadingSummary, setIsLoadingSummary] = useState(false); // Loading state for summary generation
-    const [isLoadingKeyConcepts, setIsLoadingKeyConcepts] = useState(false); // Loading state for key concept extraction
+    const [inputText, setInputText] = useState('');
+    const { generatedSummary, setGeneratedSummary, keyConcepts, setKeyConcepts } = useSummary();
+    const [isLoadingSummary, setIsLoadingSummary] = useState(false);
+    const [isLoadingKeyConcepts, setIsLoadingKeyConcepts] = useState(false);
     const [file, setFile] = useState(null);
     const fileInputRef = useRef(null);
     const [fileInputKey, setFileInputKey] = useState(Date.now());
-    const [keyConcepts, setKeyConcepts] = useState([]);
 
-    // Check if Summarize button should be enabled
+    // Enable/Disable Summarize button
     const isSummarizable = inputText !== '' || file != null;
 
     useEffect(() => {
-        // This will reset the input value whenever the file is cleared
+        // Reset input value when file is cleared
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
@@ -26,12 +26,11 @@ function TextSummarization() {
         let headers = {};
         let body = null;
 
-        // If a file is selected, use FormData
         if (file) {
             let formData = new FormData();
             formData.append('file', file);
             body = formData;
-            // For FormData, the 'Content-Type' header will be automatically set with the correct boundary
+            // For FormData, 'Content-Type' header is auto-set with correct boundary
         } else {
             // For direct text, send JSON data
             headers = { 'Content-Type': 'application/json' };
@@ -45,14 +44,14 @@ function TextSummarization() {
         });
         const data = await response.json();
         console.log(data);
-        setSummarizedText(data.summary);
+        setGeneratedSummary(data.summary);
         setIsLoadingSummary(false);
         setFile(null); // Reset file input after processing
     };
 
       const handleFileChange = (event) => {
         setFile(event.target.files[0]);
-        setInputText(''); // Clear the text area when a file is selected
+        setInputText(''); // Clear text area when file selected
     };
 
     const handleClearFile = () => {
@@ -62,13 +61,13 @@ function TextSummarization() {
     };
 
     const handleExtractKeyConcepts = async () => {
-        if (!summarizedText) return; // Don't extract if no summary is available
+        if (!generatedSummary) return; // Don't extract if no summary available
         setIsLoadingKeyConcepts(true);
     
         const response = await fetch('http://localhost:3001/extract-key-concepts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: summarizedText }),
+            body: JSON.stringify({ text: generatedSummary }),
         });
         const data = await response.json();
     
@@ -119,13 +118,13 @@ function TextSummarization() {
                 <div class="flex justify-center items-center">
                     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
-            ) : summarizedText}
+            ) : generatedSummary}
         </div>
         <div className="mb-8">
                     <button
-                        className={`btn font-manrope ${summarizedText ? 'btn-primary' : 'btn-disabled'}`}
+                        className={`btn font-manrope ${generatedSummary ? 'btn-primary' : 'btn-disabled'}`}
                         onClick={handleExtractKeyConcepts}
-                        disabled={!summarizedText}>
+                        disabled={!generatedSummary}>
                         Extract Key Concepts
                     </button>
                 </div>

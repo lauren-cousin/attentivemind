@@ -24,6 +24,10 @@ summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 # Load the keyphrase extraction model
 keyphrase_extractor = pipeline("token-classification", model="ml6team/keyphrase-extraction-kbir-inspec")
 # keyphrase_extractor = pipeline("token-classification", model="ml6team/keyphrase-extraction-distilbert-openkp")
+# Flashcard generation
+# generator = pipeline('text-generation', model='EleutherAI/gpt-neo-125m')
+flashcard_tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
+flashcard_model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-base")
 
 def chunk_text(input_text, chunk_size=1024):
     tokens = tokenizer.encode(input_text, return_tensors='pt', truncation=True, max_length=chunk_size, padding="max_length")
@@ -96,7 +100,7 @@ def extract_key_concepts():
     # Process each token in the prediction
     for prediction in keyphrases_predictions:
         token = prediction['word']
-        score = prediction['score']  # You might use this score for further filtering
+        score = prediction['score']  # Maybe use this later to filter more
         
         # Check if it is a subword that should be merged
         if token.startswith('##'):
@@ -115,6 +119,40 @@ def extract_key_concepts():
     unique_keyphrases = list(set(keyphrases))
 
     return jsonify({'keyphrases': keyphrases})
+
+@app.route('/generate-flashcards', methods=['POST'])
+def generate_flashcards():
+    data = request.get_json()
+    text = data.get('text', '')
+
+    if not text:
+        return jsonify({'error': 'No text provided for flashcard generation'}), 400
+
+    num_flashcards_to_generate = 2  # Generate 2 Q&A pairs
+    generated_questions = set()
+    flashcards = []
+
+    for _ in range(num_flashcards_to_generate):
+        # Generate a question based on the text
+        input_text = f"Please generate a question based on this text: {text}"
+        input_ids = flashcard_tokenizer(input_text, return_tensors="pt").input_ids
+        question_outputs = flashcard_model.generate(input_ids, max_length=100, num_beams=5, early_stopping=True, do_sample=True, temperature=0.8)
+        question = flashcard_tokenizer.decode(question_outputs[0], skip_special_tokens=True)
+
+        if question in generated_questions:
+            continue  # Skip if same question already generated
+        generated_questions.add(question)
+
+        # Generate answer based on question and text
+        input_text_for_answer = f"What is the answer to '{question}', based on this text: {text}"
+        input_ids_for_answer = flashcard_tokenizer(input_text_for_answer, return_tensors="pt").input_ids
+        answer_outputs = flashcard_model.generate(input_ids_for_answer, max_length=150, num_beams=5, early_stopping=True, do_sample=True, temperature=0.5)
+        answer = flashcard_tokenizer.decode(answer_outputs[0], skip_special_tokens=True)
+
+        # Add Q&A pair as new flashcard
+        flashcards.append({'front': question, 'back': answer})
+
+    return jsonify({'flashcards': flashcards})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

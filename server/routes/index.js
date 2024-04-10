@@ -76,4 +76,32 @@ router.post('/extract-key-concepts', async (req, res) => {
     }
 });
 
+router.post('/generate-flashcards', async (req, res) => {
+    try {
+        const { text } = req.body;
+
+        if (!text) {
+            return res.status(400).send({ message: 'No text provided for flashcard generation' });
+        }
+
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: text }),
+        };
+
+        const response = await fetch('http://127.0.0.1:5001/generate-flashcards', requestOptions);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        console.error('Error forwarding request to Flask app:', error.message);
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+});
+
 module.exports = router;
