@@ -1,0 +1,10 @@
+build:
+  docker:
+    web: server/Dockerfile
+    worker: nlp-service/Dockerfile
+release:
+  command:
+    - "npm run migrate --prefix server"
+run:
+  web: cd server && npm run start
+  worker: python nlp-service/app.py

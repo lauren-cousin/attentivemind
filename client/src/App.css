@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Ensure padding is applied to include list markers */
+.NoteTakingEditor .ProseMirror {
+  padding: 1rem; /* Adjust padding as needed */
+  min-height: 500px; /* Adjust minimum height as needed */
+  background-color: white; /* Adjust color */
+  box-shadow: 0 0 5px rgba(0,0,0,0.1); /* Adds a subtle shadow */
+  border-radius: 8px; /* Rounds the corners */
+}
+
+.NoteTakingEditor .ProseMirror blockquote {
+  @apply border-l-4 border-gray-200 pl-4 italic text-gray-600;
+}
+
+.text-shadow {
+  text-shadow: 0px 1px 1px rgba(0,0,0,0.4);
+}
