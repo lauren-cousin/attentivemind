@@ -18,7 +18,9 @@ def handle_file(file):
 
 # Load the summarization pipeline with the specified model and tokenizer
 tokenizer = AutoTokenizer.from_pretrained("facebook/bart-large-cnn")
-model = AutoModelForSeq2SeqLM.from_pretrained("nlp-model-training/saved_models/bart-large-arxiv")
+# TODO: revert back to saved model in cloud storage
+model = AutoModelForSeq2SeqLM.from_pretrained("facebook/bart-large-cnn")
+# model = AutoModelForSeq2SeqLM.from_pretrained("nlp-model-training/saved_models/bart-large-arxiv")
 # summarizer = pipeline("summarization", model=model, tokenizer=tokenizer)
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 # Load the keyphrase extraction model
