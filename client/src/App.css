@@ -45,9 +45,9 @@
 .NoteTakingEditor .ProseMirror {
   padding: 1rem; /* Adjust padding as needed */
   min-height: 500px; /* Adjust minimum height as needed */
-  background-color: white; /* Or any color that matches your design */
-  box-shadow: 0 0 5px rgba(0,0,0,0.1); /* Optional: Adds a subtle shadow */
-  border-radius: 8px; /* Optional: Rounds the corners */
+  background-color: white; /* Adjust color */
+  box-shadow: 0 0 5px rgba(0,0,0,0.1); /* Adds a subtle shadow */
+  border-radius: 8px; /* Rounds the corners */
 }
 
 .NoteTakingEditor .ProseMirror blockquote {

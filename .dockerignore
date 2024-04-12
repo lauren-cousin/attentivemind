@@ -1,0 +1,10 @@
+**/node_modules
+**/__pycache__
+**/.venv
+**/.git
+**/.gitignore
+**/.dockerignore
+**/Dockerfile*
+**/docker-compose.yml
+*.log
+tmp

@@ -18,7 +18,7 @@ def handle_file(file):
 
 # Load the summarization pipeline with the specified model and tokenizer
 tokenizer = AutoTokenizer.from_pretrained("facebook/bart-large-cnn")
-model = AutoModelForSeq2SeqLM.from_pretrained("../../nlp-model-training/saved_models/bart-large-arxiv")
+model = AutoModelForSeq2SeqLM.from_pretrained("nlp-model-training/saved_models/bart-large-arxiv")
 # summarizer = pipeline("summarization", model=model, tokenizer=tokenizer)
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 # Load the keyphrase extraction model
@@ -154,5 +154,8 @@ def generate_flashcards():
 
     return jsonify({'flashcards': flashcards})
 
-if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+# if __name__ == '__main__':
+#     app.run(debug=True, port=5001)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5001, debug=True)
