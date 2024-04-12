@@ -3,9 +3,6 @@ build:
     web: server/Dockerfile
     worker: server/nlp-service/Dockerfile
     client: client/Dockerfile
-release:
-  command:
-    - "npm run migrate --prefix server"
 run:
   web: node app.js
   worker: python app.py
