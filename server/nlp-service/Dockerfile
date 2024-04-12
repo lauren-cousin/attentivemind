@@ -6,7 +6,8 @@ WORKDIR /usr/src/app
 # Copy current directory contents into container
 COPY . .
 
-COPY nlp-model-training/saved_models /usr/src/app/nlp-model-training/saved_models
+# TODO: add back in later
+# COPY nlp-model-training/saved_models /usr/src/app/nlp-model-training/saved_models
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
