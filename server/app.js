@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001; // Use Heroku's assigned port or default to 3001 for local development
 
 // Import routes
 const indexRouter = require('./routes/index');
