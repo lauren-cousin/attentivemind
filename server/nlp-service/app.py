@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM, AutoModelForTokenClassification
 from werkzeug.utils import secure_filename
+from functools import lru_cache
+# import gc
 import os
 
 app = Flask(__name__)
@@ -16,22 +18,34 @@ def handle_file(file):
     else:
         return 'Unsupported file type'
 
-# Load the summarization pipeline with the specified model and tokenizer
-tokenizer = AutoTokenizer.from_pretrained("facebook/bart-large-cnn")
-# TODO: revert back to saved model in cloud storage
-model = AutoModelForSeq2SeqLM.from_pretrained("facebook/bart-large-cnn")
-# model = AutoModelForSeq2SeqLM.from_pretrained("nlp-model-training/saved_models/bart-large-arxiv")
-# summarizer = pipeline("summarization", model=model, tokenizer=tokenizer)
-summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
-# Load the keyphrase extraction model
-keyphrase_extractor = pipeline("token-classification", model="ml6team/keyphrase-extraction-kbir-inspec")
-# keyphrase_extractor = pipeline("token-classification", model="ml6team/keyphrase-extraction-distilbert-openkp")
-# Flashcard generation
-# generator = pipeline('text-generation', model='EleutherAI/gpt-neo-125m')
-flashcard_tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
-flashcard_model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-base")
+@lru_cache()
+def get_summarizer():
+    # Load the summarization pipeline with the specified model and tokenizer
+    tokenizer = AutoTokenizer.from_pretrained("facebook/bart-large-cnn")
+    # TODO: revert back to saved model in cloud storage
+    model = AutoModelForSeq2SeqLM.from_pretrained("facebook/bart-large-cnn")
+    # model = AutoModelForSeq2SeqLM.from_pretrained("nlp-model-training/saved_models/bart-large-arxiv")
+    # summarizer = pipeline("summarization", model=model, tokenizer=tokenizer)
+    summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+    return summarizer, tokenizer
+
+@lru_cache()
+def get_keyphrase_extractor():
+    # Load the keyphrase extraction model
+    keyphrase_extractor = pipeline("token-classification", model="ml6team/keyphrase-extraction-kbir-inspec")
+    # keyphrase_extractor = pipeline("token-classification", model="ml6team/keyphrase-extraction-distilbert-openkp")
+    return keyphrase_extractor
+
+@lru_cache()
+def get_flashcard_resources():    
+    # Flashcard generation
+    # generator = pipeline('text-generation', model='EleutherAI/gpt-neo-125m')
+    flashcard_tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
+    flashcard_model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-base")
+    return model, tokenizer
 
 def chunk_text(input_text, chunk_size=1024):
+    summarizer, tokenizer = get_summarizer()
     tokens = tokenizer.encode(input_text, return_tensors='pt', truncation=True, max_length=chunk_size, padding="max_length")
     chunks = [tokens[0, i:i + chunk_size] for i in range(0, tokens.size(1), chunk_size)]
     chunked_texts = [tokenizer.decode(chunk, skip_special_tokens=True, clean_up_tokenization_spaces=False) for chunk in chunks]
@@ -78,6 +92,7 @@ def summarize_text(min_ratio=0.1, max_ratio=0.7):
     min_length = max(100, min_length)
     
     chunked_texts = chunk_text(text_to_summarize)
+    summarizer, _ = get_summarizer()
     summaries = [summarizer(text, max_length=max_length, min_length=min_length, do_sample=False)[0]['summary_text'] for text in chunked_texts]
     
     # Return the summary as a JSON response
@@ -91,6 +106,8 @@ def extract_key_concepts():
 
     if not summarized_text:
         return jsonify({'error': 'No text provided'}), 400
+
+    keyphrase_extractor = get_keyphrase_extractor()
 
     # Perform keyphrase extraction
     keyphrases_predictions = keyphrase_extractor(summarized_text)
@@ -130,6 +147,8 @@ def generate_flashcards():
     if not text:
         return jsonify({'error': 'No text provided for flashcard generation'}), 400
 
+    model, tokenizer = get_flashcard_resources()
+
     num_flashcards_to_generate = 2  # Generate 2 Q&A pairs
     generated_questions = set()
     flashcards = []
@@ -156,8 +175,19 @@ def generate_flashcards():
 
     return jsonify({'flashcards': flashcards})
 
+# @app.route('/shutdown', methods=['POST'])
+# def shutdown_server():
+#     func = request.environ.get('werkzeug.server.shutdown')
+#     if func is None:
+#         raise RuntimeError('Not running with the Werkzeug Server')
+#     func()
+#     gc.collect()
+#     return 'Server shutting down...'
+
 # if __name__ == '__main__':
 #     app.run(debug=True, port=5001)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    # Bind to PORT if defined, default to 5001 for local development.
+    port = int(os.environ.get('PORT', 5001))
+    app.run(host="0.0.0.0", port=port, debug=False)  # Set debug to False in production
