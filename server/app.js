@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3001; // Use Heroku's assigned port or default to 3001 for local development
-const attentiveMindServiceUrl = process.env.ATTENTIVE_MIND_BACKEND_URL || 'http://localhost' // Default to localhost for local development
+const attentiveMindServiceUrl = process.env.REACT_APP_ATTENTIVE_MIND_BACKEND_URL || 'http://localhost' // Default to localhost for local development
 
 // Import routes
 const indexRouter = require('./routes/index');

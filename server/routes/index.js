@@ -6,7 +6,7 @@ const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
 
 // Set config var to for Heroku
-const attentiveMindServiceUrl = process.env.ATTENTIVE_MIND_NLP_SERVICE_URL || 'http://localhost:5001' // Default to localhost for local development
+const attentiveMindServiceUrl = process.env.REACT_APP_ATTENTIVE_MIND_NLP_SERVICE_URL || 'http://localhost:5001' // Default to localhost for local development
 
 // Configure multer (for file uploads)
 const storage = multer.memoryStorage(); // Use memory storage
