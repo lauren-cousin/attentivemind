@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM, AutoModelForTokenClassification
 from werkzeug.utils import secure_filename
 from functools import lru_cache
@@ -52,6 +52,7 @@ def chunk_text(input_text, chunk_size=1024):
     return chunked_texts
 
 @app.route('/summarize', methods=['POST'])
+@cross_origin()
 def summarize_text(min_ratio=0.1, max_ratio=0.7):
     print("Headers:", request.headers)
     print("Files:", request.files)
@@ -100,6 +101,7 @@ def summarize_text(min_ratio=0.1, max_ratio=0.7):
     return jsonify({'summary': combined_summary})
 
 @app.route('/extract-key-concepts', methods=['POST'])
+@cross_origin()
 def extract_key_concepts():
     data = request.get_json(force=True)
     summarized_text = data.get('text', '')
@@ -140,6 +142,7 @@ def extract_key_concepts():
     return jsonify({'keyphrases': keyphrases})
 
 @app.route('/generate-flashcards', methods=['POST'])
+@cross_origin()
 def generate_flashcards():
     data = request.get_json()
     text = data.get('text', '')
@@ -176,6 +179,7 @@ def generate_flashcards():
     return jsonify({'flashcards': flashcards})
 
 # @app.route('/shutdown', methods=['POST'])
+# @cross_origin()
 # def shutdown_server():
 #     func = request.environ.get('werkzeug.server.shutdown')
 #     if func is None:
