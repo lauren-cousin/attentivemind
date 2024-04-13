@@ -49,6 +49,7 @@ function FlashcardGeneration() {
                 body: JSON.stringify({
                     text: generatedSummary
                 }),
+                mode: 'cors'
             });
     
             if (!response.ok) {

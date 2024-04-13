@@ -43,6 +43,7 @@ function TextSummarization() {
             method: 'POST',
             headers: headers,
             body: body,
+            mode: 'cors'
         });
         const data = await response.json();
         console.log(data);
@@ -70,6 +71,7 @@ function TextSummarization() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ text: generatedSummary }),
+            mode: 'cors'
         });
         const data = await response.json();
     
