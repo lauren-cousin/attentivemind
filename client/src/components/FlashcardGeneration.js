@@ -3,6 +3,9 @@ import FlashcardContainer from './FlashcardContainer';
 import FlashcardSetModal from './FlashcardSetModal';
 import { useSummary } from '../SummaryContext';
 
+// Set config var to for Heroku
+const attentiveMindServiceUrl = process.env.ATTENTIVE_MIND_SERVICE_URL || 'http://localhost:3001' // Default to localhost for local development
+
 function FlashcardGeneration() {
     const { generatedSummary } = useSummary();
     const [isSetModalOpen, setIsSetModalOpen] = useState(false);
@@ -38,7 +41,7 @@ function FlashcardGeneration() {
 
     const generateFlashcards = async () => {
         try {
-            const response = await fetch('http://localhost:3001/generate-flashcards', {
+            const response = await fetch(`${attentiveMindServiceUrl}/generate-flashcards`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

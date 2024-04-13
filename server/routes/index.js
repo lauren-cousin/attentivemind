@@ -5,6 +5,8 @@ const multer = require('multer');
 const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
 
+// Set config var to for Heroku
+const attentiveMindServiceUrl = process.env.ATTENTIVE_MIND_SERVICE_URL || 'http://localhost:5001' // Default to localhost for local development
 
 // Configure multer (for file uploads)
 const storage = multer.memoryStorage(); // Use memory storage
@@ -44,7 +46,7 @@ router.post('/summarize', upload.single('file'), async (req, res) => {
             body: JSON.stringify({ text: text }),
         };
 
-        const response = await fetch('http://attentivemind-nlp-service-1:5001/summarize', requestOptions);
+        const response = await fetch(`${attentiveMindServiceUrl}/summarize`, requestOptions);
         const data = await response.json();
         res.json(data);
     } catch (error) {
@@ -67,7 +69,7 @@ router.post('/extract-key-concepts', async (req, res) => {
             body: JSON.stringify({ text: summarizedText }),
         };
 
-        const response = await fetch('http://attentivemind-nlp-service-1:5001/extract-key-concepts', requestOptions);
+        const response = await fetch(`${attentiveMindServiceUrl}/extract-key-concepts`, requestOptions);
         const data = await response.json();
         res.json(data);
     } catch (error) {
@@ -90,7 +92,7 @@ router.post('/generate-flashcards', async (req, res) => {
             body: JSON.stringify({ text: text }),
         };
 
-        const response = await fetch('http://attentivemind-nlp-service-1:5001/generate-flashcards', requestOptions);
+        const response = await fetch(`${attentiveMindServiceUrl}/generate-flashcards`, requestOptions);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);

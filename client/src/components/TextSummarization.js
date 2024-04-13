@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useSummary } from '../SummaryContext';
 
+const attentiveMindServiceUrl = process.env.ATTENTIVE_MIND_SERVICE_URL || 'http://localhost:3001' // Default to localhost for local development
+
 function TextSummarization() {
     const [inputText, setInputText] = useState('');
     const { generatedSummary, setGeneratedSummary, keyConcepts, setKeyConcepts } = useSummary();
@@ -37,7 +39,7 @@ function TextSummarization() {
             body = JSON.stringify({ text: inputText });
         }
     
-        const response = await fetch('http://localhost:3001/summarize', {
+        const response = await fetch(`${attentiveMindServiceUrl}/summarize`, {
             method: 'POST',
             headers: headers,
             body: body,
@@ -64,7 +66,7 @@ function TextSummarization() {
         if (!generatedSummary) return; // Don't extract if no summary available
         setIsLoadingKeyConcepts(true);
     
-        const response = await fetch('http://localhost:3001/extract-key-concepts', {
+        const response = await fetch(`${attentiveMindServiceUrl}/extract-key-concepts`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ text: generatedSummary }),
