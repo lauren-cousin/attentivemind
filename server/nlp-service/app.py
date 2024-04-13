@@ -7,7 +7,7 @@ from functools import lru_cache
 import os
 
 app = Flask(__name__)
-CORS(app, resources={r"/summarize": {"origins": "*"}})
+CORS(app, supports_credentials=True, origins="*")
 
 # Helper function to handle different file types
 def handle_file(file):
