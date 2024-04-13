@@ -1,9 +1,0 @@
-build:
-  docker:
-    web: server/Dockerfile
-    worker: server/nlp-service/Dockerfile
-    client: client/Dockerfile
-run:
-  web: node app.js
-  worker: python app.py
-  client: serve -s build

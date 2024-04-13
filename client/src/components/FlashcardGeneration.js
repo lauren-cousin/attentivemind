@@ -4,7 +4,7 @@ import FlashcardSetModal from './FlashcardSetModal';
 import { useSummary } from '../SummaryContext';
 
 // Set config var to for Heroku
-const attentiveMindServiceUrl = process.env.ATTENTIVE_MIND_SERVICE_URL || 'http://localhost:3001' // Default to localhost for local development
+const attentiveMindServiceUrl = process.env.ATTENTIVE_MIND_BACKEND_URL || 'http://localhost:3001' // Default to localhost for local development
 
 function FlashcardGeneration() {
     const { generatedSummary } = useSummary();

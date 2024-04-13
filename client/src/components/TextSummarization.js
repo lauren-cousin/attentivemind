@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useSummary } from '../SummaryContext';
 
-const attentiveMindServiceUrl = process.env.ATTENTIVE_MIND_SERVICE_URL || 'http://localhost:3001' // Default to localhost for local development
+const attentiveMindServiceUrl = process.env.ATTENTIVE_MIND_BACKEND_URL || 'http://localhost:3001' // Default to localhost for local development
 
 function TextSummarization() {
     const [inputText, setInputText] = useState('');
