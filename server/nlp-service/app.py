@@ -7,7 +7,8 @@ from functools import lru_cache
 import os
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins="*")
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 # Helper function to handle different file types
 def handle_file(file):
@@ -54,6 +55,7 @@ def chunk_text(input_text, chunk_size=1024):
 @app.route('/summarize', methods=['POST'])
 @cross_origin()
 def summarize_text(min_ratio=0.1, max_ratio=0.7):
+    print("Received request with origin:", request.headers.get('Origin'))
     print("Headers:", request.headers)
     print("Files:", request.files)
     print("Form:", request.form)
