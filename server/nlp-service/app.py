@@ -7,7 +7,7 @@ from functools import lru_cache
 import os
 
 app = Flask(__name__)
-cors = CORS(app)
+cors = CORS(app, resources={r"/*": {"origins": "*", "allow_headers": "*", "methods": "*"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 # Helper function to handle different file types
@@ -52,8 +52,8 @@ def chunk_text(input_text, chunk_size=1024):
     chunked_texts = [tokenizer.decode(chunk, skip_special_tokens=True, clean_up_tokenization_spaces=False) for chunk in chunks]
     return chunked_texts
 
-@app.route('/summarize', methods=['POST'])
-@cross_origin()
+@app.route('/summarize', methods=['POST', 'OPTIONS'])
+@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
 def summarize_text(min_ratio=0.1, max_ratio=0.7):
     print("Received request with origin:", request.headers.get('Origin'))
     print("Headers:", request.headers)
@@ -102,8 +102,8 @@ def summarize_text(min_ratio=0.1, max_ratio=0.7):
     combined_summary = ' '.join(summaries)
     return jsonify({'summary': combined_summary})
 
-@app.route('/extract-key-concepts', methods=['POST'])
-@cross_origin()
+@app.route('/extract-key-concepts', methods=['POST', 'OPTIONS'])
+@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
 def extract_key_concepts():
     data = request.get_json(force=True)
     summarized_text = data.get('text', '')
@@ -143,8 +143,8 @@ def extract_key_concepts():
 
     return jsonify({'keyphrases': keyphrases})
 
-@app.route('/generate-flashcards', methods=['POST'])
-@cross_origin()
+@app.route('/generate-flashcards', methods=['POST', 'OPTIONS'])
+@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
 def generate_flashcards():
     data = request.get_json()
     text = data.get('text', '')
