@@ -180,15 +180,9 @@ def generate_flashcards():
 
     return jsonify({'flashcards': flashcards})
 
-# @app.route('/shutdown', methods=['POST'])
-# @cross_origin()
-# def shutdown_server():
-#     func = request.environ.get('werkzeug.server.shutdown')
-#     if func is None:
-#         raise RuntimeError('Not running with the Werkzeug Server')
-#     func()
-#     gc.collect()
-#     return 'Server shutting down...'
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({"status": "ok"}), 200
 
 # if __name__ == '__main__':
 #     app.run(debug=True, port=5001)
