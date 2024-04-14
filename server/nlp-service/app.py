@@ -23,9 +23,7 @@ def handle_file(file):
 def get_summarizer():
     # Load the summarization pipeline with the specified model and tokenizer
     tokenizer = AutoTokenizer.from_pretrained("facebook/bart-large-cnn")
-    # TODO: revert back to saved model in cloud storage
-    model = AutoModelForSeq2SeqLM.from_pretrained("facebook/bart-large-cnn")
-    # model = AutoModelForSeq2SeqLM.from_pretrained("nlp-model-training/saved_models/bart-large-arxiv")
+    model = AutoModelForSeq2SeqLM.from_pretrained("nlp-model-training/saved_models/bart-large-arxiv")
     # summarizer = pipeline("summarization", model=model, tokenizer=tokenizer)
     summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
     return summarizer, tokenizer
@@ -63,7 +61,6 @@ def summarize_text(min_ratio=0.1, max_ratio=0.7):
     text_to_summarize = ""
     if request.content_type.startswith('multipart/form-data'):
         file = request.files.get('file')
-        print("hey")
         if file:
             text_to_summarize = handle_file(file)
         elif 'text' in request.form:
@@ -72,13 +69,11 @@ def summarize_text(min_ratio=0.1, max_ratio=0.7):
             return jsonify({'error': 'No text or file provided for summarization'}), 400
     elif 'text' in request.form:
         text_to_summarize = request.form['text']
-        print("yo")
 
     # Handle JSON payloads
     elif request.is_json:
         data = request.get_json()
         text_to_summarize = data.get('text', '')
-        print("aye")
 
     print("Text to summarize: ", text_to_summarize)
     if not text_to_summarize:
