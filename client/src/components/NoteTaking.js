@@ -2,6 +2,7 @@ import React from 'react';
 import { useSummary } from '../SummaryContext';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import Blockquote from '@tiptap/extension-blockquote';
 import Color from '@tiptap/extension-color';
 import Highlight from '@tiptap/extension-highlight';
 import ListItem from '@tiptap/extension-list-item';
@@ -30,6 +31,7 @@ function NoteTaking() {
           listItem: {
           },
         }),
+        Blockquote,
         Color.configure({ types: [TextStyle.name, ListItem.name] }),
         Highlight.configure({ multicolor: true }),
         TextStyle.configure({ 
@@ -64,35 +66,33 @@ function NoteTaking() {
         }
       },
     });
-  
+
     return (
-        <div className="flex flex-col md:flex-row p-4 gap-8">
+      <div className="flex flex-col px-8">
+        <h1 className="font-proximanova font-bold text-3xl mb-4">Note-Taking</h1>
+        <p className="font-manrope font-light text-xl">Enhance your learning experience with our dynamic Note-Taking tool. Designed for active learners, this feature allows you to take structured notes efficiently alongside your lectures.</p>
+        <div className="flex flex-col md:flex-row p-8 gap-8">
           <div className="md:flex-[2_2_0%] space-y-4 mr-8">
-            <h1 className="font-merriweather text-5xl">AttentiveMind</h1>
-            <p className="font-manrope text-2xl">Take notes alongside your lectures with focus indicators and highlights from your summary and key concepts.</p>
-            <div>
-                {editor && <MenuBar editor={editor} />}
-                <EditorContent 
-                    editor={editor}
-                    className="ProseMirror p-4 min-h-[500px] bg-white shadow rounded-lg"
-                />
-            </div>
+            {editor && <MenuBar editor={editor} />}
+            <EditorContent 
+              editor={editor}
+              className="ProseMirror p-4 min-h-[500px] bg-white shadow rounded-lg"
+            />
           </div>
-          <div className="md:flex-[1_1_0%] space-y-4 mt-4 md:mt-48">
+          <div className="md:flex-[1_1_0%] space-y-4">
             <div className="bg-white shadow rounded-lg p-4">
               <h2 className="text-xl font-bold mb-2">Generated Summary:</h2>
-              {generatedSummary ? (<p>{generatedSummary}</p>) : (<p className="text-gray-500">No summary available. Visit <a href="/text-summarization" className="text-blue-500 hover:underline">Text Summarization</a> to generate.</p>)}
+              {generatedSummary ? (<p className="text-gray-500">{generatedSummary}</p>) : (<p className="text-gray-500">No summary available. Visit <a href="/text-summarization" className="text-blue-500 hover:underline">Text Summarization</a> to generate.</p>)}
             </div>
             <div className="bg-white shadow rounded-lg p-4">
               <h2 className="text-xl font-bold mb-2">Key Concepts:</h2>
               {keyConcepts.length > 0 ? (
-                <ul className="list-disc pl-5">
-                    {/* Filter duplicates */}
-                    {Array.from(new Set(keyConcepts.map(kp => kp.toLowerCase())))
-                        .map(kp => kp.charAt(0).toUpperCase() + kp.slice(1))
-                        .map((kp, index) => (
-                            <li key={index}>{kp}</li>
-                    ))}
+                <ul className="list-disc pl-5 text-gray-500">
+                  {Array.from(new Set(keyConcepts.map(kp => kp.toLowerCase())))
+                    .map(kp => kp.charAt(0).toUpperCase() + kp.slice(1))
+                    .map((kp, index) => (
+                      <li key={index}>{kp}</li>
+                  ))}
                 </ul>
               ) : (
                 <p className="text-gray-500">No key concepts identified. Visit <a href="/text-summarization" className="text-blue-500 hover:underline">Text Summarization</a> to generate.</p>
@@ -100,6 +100,7 @@ function NoteTaking() {
             </div>
           </div>
         </div>
+      </div>
     );
 }
   

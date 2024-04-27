@@ -43,7 +43,7 @@ const MenuBar = ({ editor }) => {
   };
 
   return (
-    <div className="bg-gray-700 p-1 rounded-lg shadow flex flex-wrap justify-start items-center mx-auto mt-0">
+    <div className="bg-primary-300 p-1 rounded-lg shadow flex flex-wrap justify-start items-center mx-auto mt-0">
       <button onClick={() => editor.chain().focus().toggleBold().run()} className={`${buttonBaseClasses} ${editor.isActive('bold') ? 'btn-active' : ''}`}>
         <FaBold size={iconSize} />
       </button>
