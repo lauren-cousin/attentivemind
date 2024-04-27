@@ -1,7 +1,7 @@
 import React from 'react';
 import Flashcard from './Flashcard';
 
-const FlashcardContainer = ({ flashcards, onAddFlashcard }) => {
+const FlashcardContainer = ({ flashcards, onAddFlashcard, highlightKeyConcepts, keyConcepts }) => {
     return (
         <div className="p-4 space-y-4">
             <button
@@ -12,7 +12,13 @@ const FlashcardContainer = ({ flashcards, onAddFlashcard }) => {
             </button>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {flashcards.map((flashcard) => (
-                    <Flashcard key={flashcard.id} frontContent={flashcard.front} backContent={flashcard.back} />
+                    <Flashcard 
+                        key={flashcard.id} 
+                        frontContent={flashcard.front} 
+                        backContent={flashcard.back} 
+                        highlightKeyConcepts={highlightKeyConcepts}
+                        keyConcepts={keyConcepts}
+                    />
                 ))}
             </div>
         </div>

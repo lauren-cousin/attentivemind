@@ -41,17 +41,20 @@
   }
 }
 
-/* Ensure padding is applied to include list markers */
 .NoteTakingEditor .ProseMirror {
-  padding: 1rem; /* Adjust padding as needed */
-  min-height: 500px; /* Adjust minimum height as needed */
-  background-color: white; /* Adjust color */
-  box-shadow: 0 0 5px rgba(0,0,0,0.1); /* Adds a subtle shadow */
-  border-radius: 8px; /* Rounds the corners */
+  padding: 1rem;
+  min-height: 500px;
+  background-color: white;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  border-radius: 8px;
 }
 
-.NoteTakingEditor .ProseMirror blockquote {
-  @apply border-l-4 border-gray-200 pl-4 italic text-gray-600;
+.ProseMirror blockquote {
+  padding: 4px 20px;
+  margin: 0 0 10px;
+  border-left: 4px solid gray;
+  background-color: #f9f9f9;
+  font-style: italic;
 }
 
 .text-shadow {

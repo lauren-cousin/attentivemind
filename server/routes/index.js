@@ -2,58 +2,72 @@ const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
 const multer = require('multer');
-const pdfParse = require('pdf-parse');
-const mammoth = require('mammoth');
+const textract = require('textract');
 
-// Set config var to for Heroku
-const attentiveMindServiceUrl = process.env.REACT_APP_ATTENTIVE_MIND_NLP_SERVICE_URL || 'http://localhost:5001' // Default to localhost for local development
+console.log('REACT_APP_ATTENTIVE_MIND_BACKEND_URL:', process.env.REACT_APP_ATTENTIVE_MIND_BACKEND_URL);
+console.log('REACT_APP_ATTENTIVE_MIND_NLP_SERVICE_URL:', process.env.REACT_APP_ATTENTIVE_MIND_NLP_SERVICE_URL);
+const attentiveMindServiceUrl = process.env.REACT_APP_ATTENTIVE_MIND_NLP_SERVICE_URL || 'http://attentivemind-nlp-service-1:5001' || 'http://localhost:5001' // Default to localhost for local development
 
-// Configure multer (for file uploads)
+const MIN_LENGTH = 100;
+const MAX_LENGTH = 25000;
+
 const storage = multer.memoryStorage(); // Use memory storage
 const upload = multer({ storage: storage });
 
-// Define a route to call the Python NLP service
-router.post('/summarize', upload.single('file'), async (req, res) => {
-    let text = '';
+router.post('/summarize', upload.single('file'), (req, res) => {
+    if (req.file) {
+        console.log("Received a file for summarization:", req.file.originalname);
+        console.log("File type:", req.file.mimetype);
 
-    try {
-        if (req.file) {
-            console.log("Received a file for summarization:", req.file.originalname);
-            console.log("File type: " + req.file.mimetype);
-
-            // Determine the file type and extract text accordingly
-            if (req.file.mimetype === 'text/plain') {
-                text = req.file.buffer.toString('utf8');
-            } else if (req.file.mimetype === 'application/pdf') {
-                const data = await pdfParse(req.file.buffer);
-                text = data.text;
-            } else if (req.file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || req.file.mimetype === 'application/msword') {
-                const result = await mammoth.extractRawText({ buffer: req.file.buffer });
-                text = result.value;
-            } else {
-                return res.status(400).send({ message: 'Unsupported file type' });
+        new Promise((resolve, reject) => {
+            textract.fromBufferWithName(req.file.originalname, req.file.buffer, (error, text) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(text);
+                }
+            });
+        }).then(text => {
+            if (text.length < MIN_LENGTH || text.length > MAX_LENGTH) {
+                throw new Error(`Text must be between ${MIN_LENGTH} and ${MAX_LENGTH} characters.`);
             }
-        } else if (req.body.text) {
-            console.log("Received text for summarization:", req.body.text);
-            text = req.body.text;
-        } else {
-            return res.status(400).send({ message: 'No text or file provided for summarization' });
-        }
-
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: text }),
-        };
-
-        const response = await fetch(`${attentiveMindServiceUrl}/summarize`, requestOptions);
-        const data = await response.json();
-        res.json(data);
-    } catch (error) {
-        console.error('Error:', error.message);
-        res.status(500).json({ message: 'Internal Server Error', error: error.message });
+            return fetch(`${attentiveMindServiceUrl}/summarize`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: text }),
+            });
+        }).then(response => response.json())
+          .then(data => res.json(data))
+          .catch(error => {
+            console.error('Error:', error.message);
+            res.status(500).json({ message: error.message, error: error.message });
+        });
+    } else if (req.body.text) {
+        console.log("Received text for summarization:", req.body.text);
+        handleTextSummarization(req.body.text, res);
+    } else {
+        res.status(400).send({ message: 'No text or file provided for summarization' });
     }
 });
+
+function handleTextSummarization(text, res) {
+    if (text.length < MIN_LENGTH || text.length > MAX_LENGTH) {
+        return res.status(400).send({
+            message: `Text must be between ${MIN_LENGTH} and ${MAX_LENGTH} characters.`,
+        });
+    }
+    fetch(`${attentiveMindServiceUrl}/summarize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: text }),
+    })
+    .then(response => response.json())
+    .then(data => res.json(data))
+    .catch(error => {
+        console.error('Error:', error.message);
+        res.status(500).json({ message: error.message, error: error.message });
+    });
+}
 
 router.post('/extract-key-concepts', async (req, res) => {
     try {

@@ -122,7 +122,7 @@ const FlashcardSetModal = ({ isOpen, onClose, onSaveSet, flashcardSet }) => {
                     </DragDropContext>
                     <div className="flex justify-between items-center mt-4">
                         <button type="button" className="btn btn-primary" onClick={addFlashcard}>Add Flashcard</button>
-                        <button type="submit" className="btn btn-success">Save</button>
+                        <button type="submit" className="btn btn-secondary">Save</button>
                     </div>
                 </form>
             </div>
