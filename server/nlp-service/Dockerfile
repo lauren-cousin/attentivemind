@@ -1,6 +1,6 @@
 FROM python:3.12.3
-# ENV REACT_APP_ATTENTIVE_MIND_BACKEND_URL https://attentive-mind-uvxoy.ondigitalocean.app/attentive-mind-web-service
-# ENV REACT_APP_ATTENTIVE_MIND_NLP_SERVICE_URL https://attentive-mind-uvxoy.ondigitalocean.app/attentive-mind-nlp-service
+ENV REACT_APP_ATTENTIVE_MIND_BACKEND_URL https://attentive-mind-uvxoy.ondigitalocean.app/attentive-mind-web-service
+ENV REACT_APP_ATTENTIVE_MIND_NLP_SERVICE_URL https://attentive-mind-uvxoy.ondigitalocean.app/attentive-mind-nlp-service
 
 # Set working directory
 WORKDIR /usr/src/app
@@ -12,7 +12,7 @@ COPY . .
 # COPY nlp-model-training/saved_models /usr/src/app/nlp-model-training/saved_models
 
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --default-timeout=300 -r requirements.txt
 
 # Make port available outside this container
 EXPOSE 5001
