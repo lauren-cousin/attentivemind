@@ -7,8 +7,8 @@ You can also build and run a Dockerized version of the app locally by following 
 ## Hosting
 - Application is hosted through DigitalOcean.
 - Hosting the NLP service is resource intensive. The minimum resource size for the NLP service that works reliably is: 
-  - $150.00/mo – Pro
-  - 8 GB RAM | 2 Dedicated vCPUs | 100 GB bandwidth
+    - $50.00/mo
+    - 4 GB RAM | 2 vCPUs | 250 GB bandwidth
 
 ## Local Build and Run
 - Install [Docker](https://docs.docker.com/get-docker/)
