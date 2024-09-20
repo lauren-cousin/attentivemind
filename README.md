@@ -2,6 +2,8 @@
 
 ## Accessing the Application
 Visit the following URL to access the application: https://attentive-mind-uvxoy.ondigitalocean.app/.
+* Please note the nlp service is turned off to save $$ while in demo mode. Running a model is pricey.
+
 You can also build and run a Dockerized version of the app locally by following the instructions below.
 
 ## Hosting
