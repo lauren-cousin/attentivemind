@@ -30,9 +30,13 @@ def handle_file(file):
 @lru_cache()
 def get_summarizer():
     # Load the summarization pipeline with the specified model and tokenizer
-    tokenizer = AutoTokenizer.from_pretrained("facebook/bart-large-cnn")
-    model = AutoModelForSeq2SeqLM.from_pretrained("nlp-model-training/models/bart-large-longform-article-summarization")
+    # tokenizer = AutoTokenizer.from_pretrained("facebook/bart-large-cnn")
+    # tokenizer = AutoTokenizer.from_pretrained("sshleifer/distilbart-xsum-12-6")
+    # model = AutoModelForSeq2SeqLM.from_pretrained("nlp-model-training/models/distilibar-xsum-12-6_longform-article-summ")
+    # model = AutoModelForSeq2SeqLM.from_pretrained("nlp-model-training/models/bart-large-longform-article-summarization")
     # model = AutoModelForSeq2SeqLM.from_pretrained("facebook/bart-large-cnn", use_cache=True)
+    tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-small")
+    model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-small")
     summarizer = pipeline("summarization", model=model, tokenizer=tokenizer)
     # summarizer = pipeline("summarization", model="facebook/bart-large-cnn", use_cache=True)
     return summarizer, tokenizer
@@ -40,7 +44,8 @@ def get_summarizer():
 @lru_cache()
 def get_keyphrase_extractor():
     # Load the keyphrase extraction model
-    keyphrase_extractor = pipeline("token-classification", model="ml6team/keyphrase-extraction-kbir-inspec")
+    # keyphrase_extractor = pipeline("token-classification", model="ml6team/keyphrase-extraction-kbir-inspec")
+    keyphrase_extractor = pipeline("token-classification", model="ml6team/keyphrase-extraction-distilbert-openkp")
     # keyphrase_extractor = pipeline("token-classification", model="ml6team/keyphrase-extraction-distilbert-openkp", use_cache=True)
     return keyphrase_extractor
 
@@ -48,11 +53,13 @@ def get_keyphrase_extractor():
 def get_flashcard_resources():    
     # Flashcard generation
     # generator = pipeline('text-generation', model='EleutherAI/gpt-neo-125m')
-    flashcard_tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
-    flashcard_model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-base")
+    # flashcard_tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
+    # flashcard_model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-base")
+    flashcard_tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-small")
+    flashcard_model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-small")
     return flashcard_model, flashcard_tokenizer
 
-def chunk_text(input_text, chunk_size=1024):
+def chunk_text(input_text, chunk_size=500):
     _, tokenizer = get_summarizer()
     tokens = tokenizer.encode(input_text, return_tensors='pt', truncation=True, max_length=chunk_size, padding="max_length")
     chunks = [tokens[0, i:i + chunk_size] for i in range(0, tokens.size(1), chunk_size)]
