@@ -49,8 +49,8 @@ function TextSummarization() {
             body = new FormData();
             body.append('file', file);
         } else {
-            headers = { 'Content-Type': 'application/json' };
-            body = JSON.stringify({ text: inputText });
+            headers = { 'Content-Type': 'application/json; charset=UTF-8' };
+        body = JSON.stringify({ text: inputText });
         }
 
         try {
@@ -101,7 +101,7 @@ function TextSummarization() {
     
         const response = await fetch(`${attentiveMindServiceUrl}/extract-key-concepts`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
             body: JSON.stringify({ text: generatedSummary }),
             mode: 'cors'
         });
